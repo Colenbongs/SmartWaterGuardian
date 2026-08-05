@@ -51,7 +51,7 @@ The **Smart Water Guardian** is an IoT-based water monitoring system that tracks
 | 220068905 | Keamogetse Selebano |
 | 220122253 | Ndzulamo Michelle Yingwani |
 | 220080694 | Hlonipho Nersely Bila |
-| 220061777 | Zizile Ezona Mbanqi |
+| 220061777 | Zizile Ezona Mbangi |
 | 219027546 | Bongane Sithole |
 
 ---
