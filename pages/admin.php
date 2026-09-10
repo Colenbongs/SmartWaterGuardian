@@ -1444,6 +1444,28 @@ $admin_uid = $_SESSION['user_id'] ?? '';
         </div>
     </div>
 
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('rejectModal')">&times;</span>
+            <h2 style="color:#ff6b6b;">Reject Registration</h2>
+            <form id="rejectForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="rejectReason">Reason for rejection:</label>
+                    <select id="rejectReason">
+                        <option value="Incomplete documentation">Incomplete documentation</option>
+                        <option value="Invalid meter number">Invalid meter number</option>
+                        <option value="Duplicate account">Duplicate account</option>
+                        <option value="Unable to verify address">Unable to verify address</option>
+                        <option value="Suspicious activity">Suspicious activity</option>
+                        <option value="Not specified">Prefer not to say</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-submit" onclick="confirmRejectUser()">Reject User</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('rejectModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('deleteModal')">&times;</span>
@@ -1779,11 +1801,21 @@ $admin_uid = $_SESSION['user_id'] ?? '';
         // ============================================================
         // REJECT USER
         // ============================================================
+        let pendingRejectUid = null;
+
         function rejectUser(uid) {
             if (!confirm('Reject this user? They will receive a notification.')) return;
-            
-            var reason = prompt('Reason for rejection (optional):');
-            
+            pendingRejectUid = uid;
+            document.getElementById('rejectReason').value = 'Incomplete documentation';
+            document.getElementById('rejectModal').classList.add('show');
+        }
+
+        function confirmRejectUser() {
+            const uid = pendingRejectUid;
+            const reason = document.getElementById('rejectReason').value;
+            closeModal('rejectModal');
+            if (!uid) return;
+
             database.ref('users/' + uid).once('value').then(function(snapshot) {
                 var userData = snapshot.val();
                 if (userData && userData.email) {
@@ -1802,6 +1834,7 @@ $admin_uid = $_SESSION['user_id'] ?? '';
                 return database.ref('users/' + uid).remove();
             }).then(function() {
                 showToast('User rejected. Notification sent.', 'success');
+                pendingRejectUid = null;
                 loadPendingApprovals();
                 loadUsers();
             }).catch(function(error) {
@@ -2551,6 +2584,7 @@ $admin_uid = $_SESSION['user_id'] ?? '';
         window.simulateESP32Data = simulateESP32Data;
         window.approveUser = approveUser;
         window.rejectUser = rejectUser;
+        window.confirmRejectUser = confirmRejectUser;
         window.filterApprovals = filterApprovals;
         window.loadPendingApprovals = loadPendingApprovals;
         window.getApprovedUsers = getApprovedUsers;
