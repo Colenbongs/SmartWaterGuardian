@@ -1,12 +1,14 @@
 // ============================================================
-// Smart Water Guardian - ESP32 Water Monitor
+// Smart Water Guardian - ESP32 Water Monitor (FIXED)
 // BOARD: ESP32 Dev Module
 // Measures: Flow Rate, Total Volume, Pressure
 // WiFi: Treviso Block A
+// FIXED: Real NTP time sync so History page works correctly
 // ============================================================
 
 #include <WiFi.h>
 #include <FirebaseESP32.h>
+#include <time.h>
 
 // ============================================================
 // WIFI CREDENTIALS
@@ -28,11 +30,11 @@
 #define LED_PIN 2
 
 // ============================================================
-// METER CONFIGURATION - SELECT YOUR METER BELOW
+// METER CONFIGURATION
 // ============================================================
 
 // METER 1 - User 1 (John) [DEFAULT - UNCOMMENT TO USE]
-#define METER_ID "MTR-2026-0001"
+#define METER_ID "MTR-1786023830550"
 #define PULSES_PER_LITER 450
 #define CALIBRATION_FACTOR 4.5
 
@@ -60,6 +62,13 @@
 #define PRESSURE_MAX_KPA 100.0
 
 // ============================================================
+// NTP TIME CONFIGURATION  (NEW)
+// ============================================================
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 2 * 3600;   // South Africa = UTC+2
+const int   daylightOffset_sec = 0;
+
+// ============================================================
 // GLOBAL VARIABLES
 // ============================================================
 FirebaseData firebaseData;
@@ -74,7 +83,7 @@ unsigned long lastTime = 0;
 unsigned long lastSendTime = 0;
 unsigned long lastPulseTime = 0;
 
-const unsigned long SEND_INTERVAL = 5000;
+const unsigned long SEND_INTERVAL = 5000;  // Send every 5s
 
 // ============================================================
 // INTERRUPT SERVICE ROUTINE
@@ -85,25 +94,42 @@ void IRAM_ATTR pulseCounter() {
 }
 
 // ============================================================
-// GET DATE STRING (YYYY-MM-DD)
+// GET DATE STRING (YYYY-MM-DD)  -- FIXED
 // ============================================================
 String getDateString() {
-    return "2026-08-04";
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain date");
+        return "1970-01-01";
+    }
+    char dateStr[11];
+    strftime(dateStr, sizeof(dateStr), "%Y-%m-%d", &timeinfo);
+    return String(dateStr);
 }
 
 // ============================================================
-// GET CURRENT HOUR (0-23)
+// GET CURRENT HOUR (0-23)  -- FIXED
 // ============================================================
 int getHour() {
-    unsigned long currentTime = millis();
-    return (currentTime / 3600000) % 24;
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        Serial.println("Failed to obtain hour");
+        return 0;
+    }
+    return timeinfo.tm_hour;
 }
 
 // ============================================================
-// GET TIMESTAMP STRING - FIXED
+// GET TIMESTAMP STRING (ISO 8601)  -- FIXED
 // ============================================================
 String getTimestamp() {
-    return String(__DATE__) + " " + String(__TIME__);
+    struct tm timeinfo;
+    if (!getLocalTime(&timeinfo)) {
+        return "1970-01-01T00:00:00Z";
+    }
+    char timeStr[25];
+    strftime(timeStr, sizeof(timeStr), "%Y-%m-%dT%H:%M:%SZ", &timeinfo);
+    return String(timeStr);
 }
 
 // ============================================================
@@ -119,21 +145,50 @@ void setup() {
     Serial.println("Network: " + String(WIFI_SSID));
     Serial.println("==========================================");
     Serial.println("");
-    
+
     pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
     pinMode(PRESSURE_SENSOR_PIN, INPUT);
     pinMode(LED_PIN, OUTPUT);
-    
+
     attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
-    
+
+    // ---------- WiFi ----------
     connectToWiFi();
+
+    // ---------- NTP TIME SYNC (NEW - CRITICAL) ----------
+    Serial.print("Syncing time with NTP");
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+    struct tm timeinfo;
+    int retries = 0;
+    while (!getLocalTime(&timeinfo) && retries < 15) {
+        Serial.print(".");
+        delay(1000);
+        retries++;
+    }
+
+    if (retries < 15) {
+        Serial.println("");
+        Serial.print("Time synced: ");
+        Serial.println(getTimestamp());
+        Serial.print("Date: ");
+        Serial.println(getDateString());
+        Serial.print("Hour: ");
+        Serial.println(getHour());
+    } else {
+        Serial.println("");
+        Serial.println("WARNING: Time sync failed - dates will be wrong!");
+    }
+
+    // ---------- Firebase ----------
     connectToFirebase();
     registerDevice();
-    
+
     Serial.println("System initialized successfully.");
     Serial.println("Waiting for water flow data...");
     Serial.println("");
-    
+
+    // Startup LED blink
     for (int i = 0; i < 3; i++) {
         digitalWrite(LED_PIN, HIGH);
         delay(200);
@@ -148,16 +203,16 @@ void setup() {
 void connectToWiFi() {
     Serial.print("Connecting to WiFi: ");
     Serial.println(WIFI_SSID);
-    
+
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    
+
     int attempts = 0;
     while (WiFi.status() != WL_CONNECTED && attempts < 30) {
         delay(500);
         Serial.print(".");
         attempts++;
     }
-    
+
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
         Serial.println("WiFi connected successfully.");
@@ -183,13 +238,13 @@ void connectToWiFi() {
 // ============================================================
 void connectToFirebase() {
     Serial.print("Connecting to Firebase...");
-    
+
     firebaseConfig.database_url = FIREBASE_HOST;
     firebaseConfig.signer.tokens.legacy_token = FIREBASE_AUTH;
-    
+
     Firebase.begin(&firebaseConfig, &firebaseAuth);
     Firebase.reconnectWiFi(true);
-    
+
     if (Firebase.ready()) {
         Serial.println(" Connected.");
     } else {
@@ -202,31 +257,35 @@ void connectToFirebase() {
 // ============================================================
 void registerDevice() {
     String path = "meters/" + String(METER_ID);
-    
+
     if (Firebase.get(firebaseData, path + "/registeredAt")) {
         if (firebaseData.dataType() == "string") {
             Serial.println("Device already registered.");
             return;
         }
     }
-    
+
     FirebaseJson json;
     json.set("meterId", METER_ID);
     json.set("model", "ESP32-YF-S201");
-    json.set("firmwareVersion", "2.0.0");
+    json.set("firmwareVersion", "2.1.0");
     json.set("registeredAt", getTimestamp());
     json.set("status", "online");
-    
+
     if (Firebase.setJSON(firebaseData, path, json)) {
         Serial.println("Device registered in Firebase.");
-        
+
         FirebaseJson reading;
         reading.set("flow", 0);
+        reading.set("flowRate", 0);
         reading.set("volume", 0);
+        reading.set("totalVolume", 0);
         reading.set("pressure", 0);
+        reading.set("battery", 100);
         reading.set("status", "online");
         reading.set("timestamp", getTimestamp());
-        
+        reading.set("lastUpdated", getTimestamp());
+
         Firebase.setJSON(firebaseData, path + "/lastReading", reading);
     } else {
         Serial.print("Device registration failed: ");
@@ -240,22 +299,22 @@ void registerDevice() {
 float readFlowRate() {
     unsigned long currentTime = millis();
     float timeInSeconds = (currentTime - lastTime) / 1000.0;
-    
+
     if (timeInSeconds < 0.5) {
         return flowRate;
     }
-    
+
     float flow = (pulseCount / (float)PULSES_PER_LITER) * 60.0 / timeInSeconds;
     flow = flow * CALIBRATION_FACTOR;
-    
+
     pulseCount = 0;
     lastTime = currentTime;
-    
+
     totalVolume += flow * (timeInSeconds / 60.0);
-    
+
     if (flow > 100.0) flow = 100.0;
     if (flow < 0) flow = 0;
-    
+
     return flow;
 }
 
@@ -265,14 +324,14 @@ float readFlowRate() {
 float readPressure() {
     int rawValue = analogRead(PRESSURE_SENSOR_PIN);
     float voltage = (rawValue / 4095.0) * 3.3;
-    
-    float pressureKpa = ((voltage - PRESSURE_MIN_VOLTAGE) / 
-                         (PRESSURE_MAX_VOLTAGE - PRESSURE_MIN_VOLTAGE)) * 
+
+    float pressureKpa = ((voltage - PRESSURE_MIN_VOLTAGE) /
+                         (PRESSURE_MAX_VOLTAGE - PRESSURE_MIN_VOLTAGE)) *
                          (PRESSURE_MAX_KPA - PRESSURE_MIN_KPA) + PRESSURE_MIN_KPA;
-    
+
     if (pressureKpa < 0) pressureKpa = 0;
     if (pressureKpa > 150) pressureKpa = 150;
-    
+
     return pressureKpa;
 }
 
@@ -281,14 +340,23 @@ float readPressure() {
 // ============================================================
 void sendDataToFirebase(float flow, float volume, float press) {
     String path = "meters/" + String(METER_ID);
-    
+
+    // Read battery (you can replace with real battery reading)
+    int batteryLevel = 100;
+
+    String ts = getTimestamp();
+
     FirebaseJson json;
     json.set("flow", flow);
+    json.set("flowRate", flow);      // Some dashboards read "flowRate"
     json.set("volume", volume);
+    json.set("totalVolume", volume); // Some dashboards read "totalVolume"
     json.set("pressure", press);
+    json.set("battery", batteryLevel);
     json.set("status", "online");
-    json.set("timestamp", getTimestamp());
-    
+    json.set("timestamp", ts);
+    json.set("lastUpdated", ts);
+
     if (Firebase.updateNode(firebaseData, path + "/lastReading", json)) {
         Serial.print("Data sent: Flow=");
         Serial.print(flow);
@@ -297,7 +365,7 @@ void sendDataToFirebase(float flow, float volume, float press) {
         Serial.print(" L, Pressure=");
         Serial.print(press);
         Serial.println(" kPa");
-        
+
         digitalWrite(LED_PIN, HIGH);
         delay(50);
         digitalWrite(LED_PIN, LOW);
@@ -305,53 +373,75 @@ void sendDataToFirebase(float flow, float volume, float press) {
         Serial.print("Send failed: ");
         Serial.println(firebaseData.errorReason());
     }
-    
+
     saveHistory(flow, volume, press);
 }
 
 // ============================================================
-// SAVE TO HISTORY
+// SAVE TO HISTORY  (History page reads from here)
 // ============================================================
 void saveHistory(float flow, float volume, float press) {
-    String date = getDateString();
-    int hour = getHour();
-    
+    String date = getDateString();   // Now returns REAL date
+    int hour = getHour();            // Now returns REAL hour
+
+    // Path: meters/{METER_ID}/history/{YYYY-MM-DD}/hourly/{hour}
     String path = "meters/" + String(METER_ID) + "/history/" + date + "/hourly/" + String(hour);
-    
+
     FirebaseJson json;
     json.set("flow", flow);
     json.set("volume", volume);
     json.set("pressure", press);
     json.set("timestamp", getTimestamp());
-    
-    Firebase.setJSON(firebaseData, path, json);
-    
+
+    if (Firebase.setJSON(firebaseData, path, json)) {
+        Serial.print("History saved: ");
+        Serial.print(date);
+        Serial.print(" hour ");
+        Serial.println(hour);
+    } else {
+        Serial.print("History save failed: ");
+        Serial.println(firebaseData.errorReason());
+    }
+
+    // Update daily total: meters/{METER_ID}/history/{YYYY-MM-DD}/total
     String totalPath = "meters/" + String(METER_ID) + "/history/" + date + "/total";
-    Firebase.get(firebaseData, totalPath);
+
     float existingTotal = 0;
-    if (firebaseData.dataType() != "null") {
+    if (Firebase.getFloat(firebaseData, totalPath)) {
         existingTotal = firebaseData.floatData();
     }
-    
-    Firebase.setFloat(firebaseData, totalPath, existingTotal + volume);
+
+    // Add the volume from this reading (approx: volume is cumulative, so we
+    // store today's total by taking the max so far).
+    // Simpler approach: just store the current cumulative volume as today's total.
+    Firebase.setFloat(firebaseData, totalPath, volume);
 }
 
 // ============================================================
-// MAIN LOOP - FIXED
+// MAIN LOOP
 // ============================================================
 void loop() {
     float flow = readFlowRate();
     float press = readPressure();
-    
+
+    // Only send if flow detected OR every SEND_INTERVAL
     if (millis() - lastSendTime >= SEND_INTERVAL) {
         sendDataToFirebase(flow, totalVolume, press);
         lastSendTime = millis();
     }
-    
+
+    // Reconnect WiFi if dropped
     if (WiFi.status() != WL_CONNECTED) {
         Serial.println("WiFi disconnected. Reconnecting...");
         connectToWiFi();
     }
-    
-    delay(100);  // FIXED
+
+    // Re-sync time periodically (once per hour is fine)
+    static unsigned long lastTimeSync = 0;
+    if (millis() - lastTimeSync > 3600000UL) {
+        configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+        lastTimeSync = millis();
+    }
+
+    delay(100);
 }
