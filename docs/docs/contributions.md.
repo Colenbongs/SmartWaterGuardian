@@ -1,0 +1,195 @@
+# Individual Contribution Records - Sprint 5-6 MVP
+
+Each team member's contributions are documented below according to the Sprint 5-6 requirements. Each entry includes full name, student number, project role, features implemented, tests written, bugs identified and corrected, relevant commits, and a personal reflection.
+
+---
+
+## Mongiwethu Ncube (221152725)
+
+**Project Role:** Team Leader and Backend and API
+
+**Features Implemented:**
+- Complete API layer architecture across auth, users, and sync endpoints
+- Firebase and MySQL dual-database synchronization logic
+- Secure user deletion via Firebase Admin SDK
+- Email notification system with eight templates
+- Strict role enforcement in the login flow
+- Firebase security rules redesign
+
+**Tests Written:**
+- Coordinated the entire 55-test suite
+- Authored all 10 tests in AdminTest.php
+
+**Bugs Identified and Corrected:**
+- BUG-003 (Firebase service account handling)
+- BUG-007 (duplicate email with whitespace)
+- BUG-010 (open Firebase rules)
+
+**Relevant Commits:**
+- a3f9e21 - fix: correct float assertion in zero-bill edge case test
+- c1e5a09 - fix: handle missing Firebase service account gracefully
+- f2a7b43 - fix: trim email before duplicate check on registration
+
+**Reflection:**
+Leading the API design taught me the importance of consistent response schemas across all endpoints. The biggest challenge was orchestrating real-time Firebase updates with MySQL's ACID guarantees. I learned to use Firebase as the source of truth for IoT data while treating MySQL as the authoritative record for billing and audit logs. The Firebase Admin SDK integration was particularly educational, especially around secure credential management. Redesigning the Firebase rules after discovering the original open rules forced me to think carefully about the balance between convenience and security.
+
+---
+
+## S. Sibeko (220115085)
+
+**Project Role:** Backend and API
+
+**Features Implemented:**
+- Billing calculation engine with tiered pricing
+- PDF report generation using jsPDF and Dompdf
+- Alert threshold API and management
+- Device registration and status tracking API
+
+**Tests Written:**
+- All 8 tests in BillingTest.php
+- Contributed edge-case tests to run-tests.php
+
+**Bugs Identified and Corrected:**
+- BUG-002 (zero-usage billing test failure)
+- BUG-008 (bill amount formatting)
+
+**Relevant Commits:**
+- b7c2d84 - fix: align zero-usage billing test with float return type
+- a1d3c78 - fix: round bill amount to 2 decimals for display
+
+**Reflection:**
+Implementing the tiered billing system was the most challenging part of this sprint. I had to ensure boundary conditions at exactly 6, 20, and 40 kilolitres were handled correctly. Writing comprehensive tests first helped me identify off-by-one errors early. The 15 percent VAT calculation must use rounding to avoid floating-point drift in financial calculations. I also learned to distinguish between strict and loose assertions in PHPUnit, which was the root cause of BUG-001 and BUG-002.
+
+---
+
+## K.M. Selebano (220068905)
+
+**Project Role:** UI and Frontend
+
+**Features Implemented:**
+- Complete dashboard UI with real-time Firebase integration
+- Admin panel with tabbed interface and modal workflows
+- Dark and light mode with CSS custom properties
+- Chart.js visualizations for usage history
+
+**Tests Written:**
+- Manual UI testing across three viewports (mobile, tablet, desktop)
+- Accessibility audit for contrast and keyboard navigation
+
+**Bugs Identified and Corrected:**
+- BUG-004 (hardcoded 2FA setup key), documented as a known limitation
+- Sidebar overflow on mobile was resolved through a related fix in BUG-005
+
+**Reflection:**
+Designing for both technical and non-technical users was a valuable lesson in progressive disclosure. Complex threshold settings are hidden behind a modal while dashboards remain simple. The CSS custom property system for theming is elegant but requires discipline to avoid hardcoded colours creeping in. The 2FA work was a genuine wake-up call about the difference between demo code and production code; I am looking forward to properly implementing TOTP in Sprint 7.
+
+---
+
+## Z.E. Mbangi (220061777)
+
+**Project Role:** UI and Frontend
+
+**Features Implemented:**
+- Registration flow with real-time validation feedback
+- Profile management with avatar upload
+- Properties CRUD interface
+- Reviews and rating system UI
+
+**Tests Written:**
+- All 9 tests in UserRegistrationTest.php
+- Cross-browser testing on Chrome, Firefox, and Edge
+
+**Bugs Identified and Corrected:**
+- BUG-005 (mobile sidebar overflow)
+
+**Relevant Commits:**
+- d4b8f12 - fix: prevent mobile sidebar overflow at 480px breakpoint
+
+**Reflection:**
+The registration form is deceptively complex. Between email format validation, password strength meters, meter number formatting, and the async Firebase and MySQL sync, there are dozens of failure modes. Building real-time validation feedback taught me the value of debouncing and blur events. I also learned that responsive design is not just about shrink-to-fit; the sidebar required a full redesign for small screens.
+
+---
+
+## N.M. Yingwani (220122253)
+
+**Project Role:** Database Administrator
+
+**Features Implemented:**
+- Complete MySQL schema with 15 tables
+- Stored procedures for common queries
+- Triggers for automatic daily usage aggregation
+- Views for dashboard statistics
+- Foreign key cascade design
+
+**Tests Written:**
+- Data integrity tests
+- Foreign key cascade verification
+
+**Bugs Identified and Corrected:**
+- BUG-006 (verify-email null guard)
+
+**Relevant Commits:**
+- e8c1a56 - fix: guard against null currentUser in verify-email page
+
+**Reflection:**
+Designing the dual-database architecture was challenging because Firebase and MySQL have fundamentally different data models. I settled on using the Firebase UID as the common key and adding sync flags to track synchronization status. The cascade delete behaviour ensures that deleting a user in MySQL does not leave orphaned records, but I had to coordinate this with the Firebase Admin SDK deletion. Understanding when to trust the relational layer and when to trust the document layer was the biggest lesson of the sprint.
+
+---
+
+## H.N. Bila (220080694)
+
+**Project Role:** Hardware Engineer
+
+**Features Implemented:**
+- ESP32 firmware architecture design
+- YF-S201 flow sensor integration
+- Firebase IoT data upload protocol
+- Hardware simulation script for testing without a physical device
+- NTP time synchronization for accurate history dates
+
+**Tests Written:**
+- Hardware-in-the-loop testing procedures
+- Data transmission reliability tests
+
+**Bugs Identified and Corrected:**
+- BUG-009 (hardcoded WiFi credentials)
+- BUG-011 (hardcoded date string)
+
+**Relevant Commits:**
+- (commit hash for the WiFi credential fix)
+- (commit hash for the NTP time fix)
+
+**Reflection:**
+The most surprising challenge was network reliability. The ESP32 needs to buffer readings during WiFi outages and batch-upload them when the connection restores. This shaped our decision to use Firebase's push method, which generates time-ordered keys and allows later offline uploads to slot correctly into the timeline. Getting NTP working on the ESP32 also revealed how easy it is to accidentally hardcode time values and how much damage that can do to historical data.
+
+---
+
+## B. Sithole (219027546)
+
+**Project Role:** Tester and Quality Assurance
+
+**Features Implemented:**
+- Complete test suite coordination and execution
+- Bug register maintenance
+- Regression testing procedures
+- Test results reporting pipeline (generate-test-results.php)
+
+**Tests Written:**
+- All 24 tests in run-tests.php
+- Regression scenarios for every bug fix
+
+**Bugs Identified and Corrected:**
+- BUG-001 (test assertion error)
+- Initial discovery of BUG-002, BUG-005, and BUG-006
+
+**Relevant Commits:**
+- a3f9e21 - fix: correct float assertion in zero-bill edge case test
+
+**Reflection:**
+Building the automated test result generator taught me that testing tools are as important as the tests themselves. A failing test that does not produce actionable output is useless. The edge cases including empty strings, whitespace-only passwords, and extreme values revealed several validation gaps that we then fixed. The most valuable lesson was that a test suite is only as good as its assertions. Using strict equality versus loose equality matters when checking data types, and understanding PHP's arithmetic behaviour prevented a lot of confusion.
+
+---
+
+## Cross-Team Collaboration
+
+All seven members contributed to bug fixing, code reviews, and testing outside of their primary areas. Several critical bugs, including BUG-010 (Firebase rules), were resolved through joint debugging sessions. Pair programming was used for the Firebase rules redesign and the ESP32 NTP implementation.
