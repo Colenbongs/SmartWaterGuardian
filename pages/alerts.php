@@ -1557,6 +1557,16 @@ $is_admin = ($user_role === 'system_admin' || $user_role === 'municipal_admin' |
             });
         }
 
+        // ==================== SECURITY: ESCAPE HTML ====================
+        // Prevents stored XSS: message/subject/name text is user-entered
+        // free text, so it must never be inserted into innerHTML raw.
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        }
+
         // ==================== RENDER MESSAGES ====================
         function renderMessages(messages) {
             const container = document.getElementById('messagesList');
@@ -1597,20 +1607,20 @@ $is_admin = ($user_role === 'system_admin' || $user_role === 'municipal_admin' |
                     <div class="message-item ${!isRead ? 'unread' : ''}">
                         <div class="header">
                             <span class="from">
-                                <span class="from-name">${fromName}</span>
+                                <span class="from-name">${escapeHtml(fromName)}</span>
                                 ${isFromAdmin ? 'Admin' : ''}
                             </span>
-                            <span class="date">${date}</span>
+                            <span class="date">${escapeHtml(date)}</span>
                         </div>
-                        <div class="subject">${msg.subject || 'Message'}</div>
-                        <div class="preview">${msg.message || ''}</div>
+                        <div class="subject">${escapeHtml(msg.subject || 'Message')}</div>
+                        <div class="preview">${escapeHtml(msg.message || '')}</div>
                         <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
                             ${!isRead ? '<span class="badge-status badge-unread">Unread</span>' : '<span class="badge-status badge-read">Read</span>'}
                             ${isReply ? '<span class="badge-status badge-reply">Reply</span>' : ''}
                         </div>
                         <div class="actions">
-                            ${isAdmin ? `<button class="btn-action btn-reply" onclick="openReplyModal('${messageId}', '${msg.fromUid || msg.from}', '${fromName}', '${msg.message}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
-                            ${!isAdmin && isFromAdmin ? `<button class="btn-action btn-reply" onclick="openReplyModal('${messageId}', '${msg.fromUid || msg.from}', '${fromName}', '${msg.message}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
+                            ${isAdmin ? `<button class="btn-action btn-reply" onclick="openReplyModal('${messageId}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
+                            ${!isAdmin && isFromAdmin ? `<button class="btn-action btn-reply" onclick="openReplyModal('${messageId}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
                             <button class="btn-action btn-delete" onclick="openDeleteModal('${messageId}')"><i class="fas fa-trash"></i> Delete</button>
                             ${!isRead ? `<button class="btn-action btn-read" onclick="markAsRead('${messageId}')"><i class="fas fa-check"></i> Mark Read</button>` : ''}
                         </div>
@@ -1786,11 +1796,20 @@ $is_admin = ($user_role === 'system_admin' || $user_role === 'municipal_admin' |
         });
 
         // ==================== OPEN REPLY MODAL ====================
-        function openReplyModal(messageId, fromUid, fromName, originalMessage) {
+        function openReplyModal(messageId) {
+            const msg = allMessages.find(m => m.id === messageId);
+            if (!msg) {
+                showToast('Message not found', 'error');
+                return;
+            }
+            const isFromAdmin = msg.from === 'admin@smartwater.com' || msg.fromUid === adminUidCache;
+            const fromName = isFromAdmin ? 'Admin' : (msg.fromName || msg.from || 'User');
+            const fromUid = msg.fromUid || msg.from;
+
             document.getElementById('replyToId').value = messageId;
             document.getElementById('replyToAdminUid').value = fromUid || adminUidCache || 'admin';
-            document.getElementById('replyToInfo').textContent = fromName || 'User';
-            document.getElementById('originalMessage').textContent = originalMessage || 'No message content';
+            document.getElementById('replyToInfo').textContent = fromName;
+            document.getElementById('originalMessage').textContent = msg.message || 'No message content';
             document.getElementById('replyMessage').value = '';
             document.getElementById('replyModal').classList.add('show');
         }
