@@ -1,0 +1,17 @@
+# Secrets
+secrets.h
+.env
+*.env.local
+
+# Build artefacts
+build/
+*.bin
+*.elf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
