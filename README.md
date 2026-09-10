@@ -819,29 +819,106 @@ In the **Rules** tab:
 ```json
 {
   "rules": {
+    ".read": false,
+    ".write": false,
+
     "users": {
       "$uid": {
-        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'system_admin'",
-        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'system_admin'"
+        ".read": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+        ".write": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+        ".validate": "newData.hasChildren(['email', 'name'])",
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[^@]+@[^@]+\\.[^@]+$/)"
+        },
+        "role": {
+          ".validate": "newData.val() == 'user' || newData.val() == 'admin'"
+        }
       }
     },
+
+    "alerts": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$alertId": {
+        ".validate": "newData.hasChildren(['userId', 'message', 'timestamp'])",
+        "userId": {
+          ".validate": "newData.isString() && (newData.val() == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin')"
+        }
+      }
+    },
+
+    "properties": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$propertyId": {
+        ".validate": "newData.hasChildren(['address', 'ownerId'])"
+      }
+    },
+
     "meters": {
       ".read": "auth != null",
+      ".write": "auth != null",
       "$meterId": {
-        ".write": "auth != null"
+        ".validate": "newData.hasChildren(['propertyId', 'reading', 'timestamp'])",
+        "reading": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
       }
     },
-    "alerts": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+
+    "thresholds": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$thresholdId": {
+        ".validate": "newData.hasChildren(['meterId', 'maxValue'])",
+        "maxValue": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        }
       }
     },
-    "properties": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+
+    "messages": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$messageId": {
+        ".validate": "newData.hasChildren(['senderId', 'receiverId', 'content', 'timestamp'])",
+        "senderId": {
+          ".validate": "newData.val() == auth.uid"
+        }
       }
+    },
+
+    "reviews": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$reviewId": {
+        ".validate": "newData.hasChildren(['userId', 'rating', 'comment'])",
+        "userId": {
+          ".validate": "newData.val() == auth.uid"
+        },
+        "rating": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5"
+        }
+      }
+    },
+
+    "bills": {
+      ".read": "auth != null && (data.child('userId').val() == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$billId": {
+        ".validate": "newData.hasChildren(['userId', 'amount', 'dueDate', 'status'])",
+        "amount": {
+          ".validate": "newData.isNumber() && newData.val() > 0"
+        },
+        "status": {
+          ".validate": "newData.val() == 'pending' || newData.val() == 'paid' || newData.val() == 'overdue'"
+        }
+      }
+    },
+
+    "admin_settings": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() == 'admin'"
     }
   }
 }
