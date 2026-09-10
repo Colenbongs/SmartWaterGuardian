@@ -609,6 +609,31 @@ Reading 3: +1.04 L → Total = 3.13 L
 ...and so on
 ```
 
+
+## Privacy & POPIA Compliance
+
+### Data Collected
+- Meter ID (non-personal identifier)
+- Flow rate, total volume, pressure readings
+- Timestamps
+
+### Purpose
+Water-consumption monitoring only. No personal information is collected by the
+ESP32 device itself.
+
+### Storage & Retention
+Data is stored in Firebase Realtime Database. Historical data is retained for
+reporting purposes and can be deleted on request by the meter owner.
+
+### Access Control
+Only authenticated users may read data. Per-meter write access is enforced by
+Firebase rules (see firebase-rules.json).
+
+### POPIA Considerations
+- Personal information is collected only where necessary.
+- Users are informed of what is collected and why.
+- Data is not shared with third parties.
+- Users may request deletion of their data.
 ---
 
 ## License
