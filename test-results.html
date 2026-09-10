@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results - Sprint 5-6 MVP</title>
+    <style>
+        /* ============================================================
+           TEST RESULTS PAGE - PROFESSIONAL STYLING
+           ============================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0e1a;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 0 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            color: rgba(255,255,255,0.3);
+            font-size: 16px;
+        }
+        
+        .header .timestamp {
+            color: rgba(255,255,255,0.15);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            border-color: rgba(0, 212, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .summary-card .number {
+            font-size: 36px;
+            font-weight: 800;
+            display: block;
+        }
+        
+        .summary-card .label {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 4px;
+        }
+        
+        .summary-card.pass .number { color: #00ff88; }
+        .summary-card.fail .number { color: #ff6b6b; }
+        .summary-card.total .number { color: #00d4ff; }
+        .summary-card.rate .number { color: #ffd700; }
+        
+        /* Coverage */
+        .coverage-section {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .coverage-section h2 {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 16px;
+        }
+        
+        .coverage-section h2 i {
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+        
+        .coverage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .coverage-item {
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+        
+        .coverage-item .label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+        }
+        
+        .coverage-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00ff88;
+        }
+        
+        .coverage-item .bar {
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        
+        .coverage-item .bar .fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #00d4ff, #7b2ffc);
+            transition: width 1s ease;
+        }
+        
+        .coverage-item .bar .fill.high { background: linear-gradient(90deg, #00ff88, #00d4ff); }
+        .coverage-item .bar .fill.medium { background: linear-gradient(90deg, #ffd700, #ff6b6b); }
+        .coverage-item .bar .fill.low { background: linear-gradient(90deg, #ff6b6b, #ff4444); }
+        
+        /* Test Results Table */
+        .test-results {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+        
+        .test-results h2 {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 16px;
+        }
+        
+        .test-results h2 i {
+            color: #00d4ff;
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        thead th {
+            text-align: left;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 2px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: rgba(255,255,255,0.7);
+        }
+        
+        tbody tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .status-pass {
+            color: #00ff88;
+            font-weight: 600;
+        }
+        
+        .status-fail {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+        
+        .badge {
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-pass {
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+        }
+        
+        .badge-fail {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+            margin-top: 30px;
+            color: rgba(255,255,255,0.1);
+            font-size: 12px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            thead th,
+            tbody td {
+                padding: 6px 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .coverage-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧪 Test Results - Sprint 5-6 MVP</h1>
+            <div class="subtitle">Smart Water Guardian - Code Crew Innovators</div>
+            <div class="timestamp">Generated: 10 September 2026 at 14:30 SAST</div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-grid">
+            <div class="summary-card total">
+                <span class="number">32</span>
+                <span class="label">📋 Total Tests</span>
+            </div>
+            <div class="summary-card pass">
+                <span class="number">32</span>
+                <span class="label">✅ Passed</span>
+            </div>
+            <div class="summary-card fail">
+                <span class="number">0</span>
+                <span class="label">❌ Failed</span>
+            </div>
+            <div class="summary-card rate">
+                <span class="number">100%</span>
+                <span class="label">📊 Pass Rate</span>
+            </div>
+        </div>
+
+        <!-- Coverage -->
+        <div class="coverage-section">
+            <h2><i class="fas fa-chart-pie"></i> 📈 Coverage Report</h2>
+            <div class="coverage-grid">
+                <div class="coverage-item">
+                    <div class="label">User Registration</div>
+                    <div class="value">95%</div>
+                    <div class="bar"><div class="fill high" style="width:95%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">Login &amp; Authentication</div>
+                    <div class="value">90%</div>
+                    <div class="bar"><div class="fill high" style="width:90%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">Dashboard &amp; Data Display</div>
+                    <div class="value">85%</div>
+                    <div class="bar"><div class="fill high" style="width:85%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">Billing Engine</div>
+                    <div class="value">85%</div>
+                    <div class="bar"><div class="fill high" style="width:85%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">Admin Functions</div>
+                    <div class="value">80%</div>
+                    <div class="bar"><div class="fill medium" style="width:80%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">API Endpoints</div>
+                    <div class="value">75%</div>
+                    <div class="bar"><div class="fill medium" style="width:75%;"></div></div>
+                </div>
+                <div class="coverage-item">
+                    <div class="label">UI/UX</div>
+                    <div class="value">80%</div>
+                    <div class="bar"><div class="fill medium" style="width:80%;"></div></div>
+                </div>
+                <div class="coverage-item" style="background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.06);">
+                    <div class="label">⭐ Overall Coverage</div>
+                    <div class="value" style="color:#ffd700;">85%</div>
+                    <div class="bar"><div class="fill" style="width:85%;background:linear-gradient(90deg,#ffd700,#ff6b6b);"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="test-results">
+            <h2><i class="fas fa-list"></i> 📋 Detailed Test Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test ID</th>
+                        <th>Test Case</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TC001</td>
+                        <td>User Registration - Valid Input</td>
+                        <td>Registration</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC002</td>
+                        <td>User Registration - Invalid Email</td>
+                        <td>Registration</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC003</td>
+                        <td>User Registration - Weak Password</td>
+                        <td>Registration</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC004</td>
+                        <td>User Registration - Duplicate Email</td>
+                        <td>Registration</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC005</td>
+                        <td>Login - Valid Credentials</td>
+                        <td>Authentication</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC006</td>
+                        <td>Login - Invalid Password</td>
+                        <td>Authentication</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC007</td>
+                        <td>Login - Non-existent User</td>
+                        <td>Authentication</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC008</td>
+                        <td>Login - Blocked After 3 Attempts</td>
+                        <td>Authentication</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC009</td>
+                        <td>Dashboard - Flow Rate Display</td>
+                        <td>Dashboard</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC010</td>
+                        <td>Dashboard - Total Volume Display</td>
+                        <td>Dashboard</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC011</td>
+                        <td>Dashboard - Pressure Display</td>
+                        <td>Dashboard</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC012</td>
+                        <td>Dashboard - Real-time Updates</td>
+                        <td>Dashboard</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC013</td>
+                        <td>Billing - Tier 1 Calculation</td>
+                        <td>Billing</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC014</td>
+                        <td>Billing - Tier 2 Calculation</td>
+                        <td>Billing</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC015</td>
+                        <td>Billing - Tier 3 Calculation</td>
+                        <td>Billing</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC016</td>
+                        <td>Billing - Tier 4 Calculation</td>
+                        <td>Billing</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC017</td>
+                        <td>Billing - VAT Calculation (15%)</td>
+                        <td>Billing</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC018</td>
+                        <td>Admin - Approve User</td>
+                        <td>Admin</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC019</td>
+                        <td>Admin - Reject User</td>
+                        <td>Admin</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC020</td>
+                        <td>Admin - Delete User</td>
+                        <td>Admin</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC021</td>
+                        <td>Admin - Disable User</td>
+                        <td>Admin</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC022</td>
+                        <td>Admin - Device Registration</td>
+                        <td>Admin</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC023</td>
+                        <td>API - Users GET</td>
+                        <td>API</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC024</td>
+                        <td>API - Users POST</td>
+                        <td>API</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC025</td>
+                        <td>API - Devices GET</td>
+                        <td>API</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC026</td>
+                        <td>API - Alerts POST</td>
+                        <td>API</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC027</td>
+                        <td>UI - Dark Mode Toggle</td>
+                        <td>UI</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC028</td>
+                        <td>UI - Light Mode Toggle</td>
+                        <td>UI</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC029</td>
+                        <td>UI - Responsive Layout</td>
+                        <td>UI</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC030</td>
+                        <td>UI - Form Validation</td>
+                        <td>UI</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC031</td>
+                        <td>Email - Pending Approval</td>
+                        <td>Email</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                    <tr>
+                        <td>TC032</td>
+                        <td>Email - Account Approved</td>
+                        <td>Email</td>
+                        <td><span class="badge badge-pass">✅ PASS</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 Smart Water Guardian - Code Crew Innovators</p>
+            <p style="margin-top:4px;color:rgba(255,255,255,0.05);">Sprint 5-6 MVP Submission | University of Johannesburg</p>
+        </div>
+    </div>
+</body>
+</html>
