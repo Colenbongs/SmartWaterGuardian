@@ -1,0 +1,55 @@
+# Firebase Realtime Database Security Rules
+
+This document explains the Firebase Realtime Database rules used by Smart Water Guardian. The rules are defined in `firebase.rules.json` at the repository root.
+
+---
+
+## Complete Rules File
+
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+    "users": {
+      ".read": true,
+      ".write": "auth != null",
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+    "alerts": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "properties": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "meters": {
+      ".read": true,
+      ".write": true
+    },
+    "thresholds": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "messages": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "reviews": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "bills": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "admin_settings": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
