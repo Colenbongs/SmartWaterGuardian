@@ -2,7 +2,7 @@
 /**
  * Smart Water Guardian - Login Page
  * Full login with approval checking, email notifications, session management
- * Includes Google Sign-In
+ * INCLUDES: 2-ATTEMPT WARNING SYSTEM
  */
 
 // Start session
@@ -31,6 +31,10 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
+        /* ============================================================
+                   LOGIN PAGE - WITH WARNING STYLING
+                   ============================================================ */
+        
         * {
             margin: 0;
             padding: 0;
@@ -79,16 +83,16 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             opacity: 0;
         }
         
-        .droplet:nth-child(1) { left: 5%; width: 6px; height: 6px; background: radial-gradient(circle, rgba(0, 100, 200, 0.4), rgba(0, 100, 200, 0.05)); box-shadow: 0 0 20px rgba(0, 100, 200, 0.2); animation-duration: 14s; animation-delay: 0s; }
-        .droplet:nth-child(2) { left: 15%; width: 8px; height: 8px; background: radial-gradient(circle, rgba(0, 80, 180, 0.3), rgba(0, 80, 180, 0.05)); box-shadow: 0 0 25px rgba(0, 80, 180, 0.2); animation-duration: 18s; animation-delay: 3s; }
-        .droplet:nth-child(3) { left: 25%; width: 4px; height: 4px; background: radial-gradient(circle, rgba(0, 100, 200, 0.5), rgba(0, 100, 200, 0.05)); box-shadow: 0 0 15px rgba(0, 100, 200, 0.25); animation-duration: 12s; animation-delay: 5s; }
-        .droplet:nth-child(4) { left: 35%; width: 10px; height: 10px; background: radial-gradient(circle, rgba(0, 60, 150, 0.25), rgba(0, 60, 150, 0.03)); box-shadow: 0 0 30px rgba(0, 60, 150, 0.15); animation-duration: 20s; animation-delay: 2s; }
-        .droplet:nth-child(5) { left: 45%; width: 5px; height: 5px; background: radial-gradient(circle, rgba(0, 90, 190, 0.4), rgba(0, 90, 190, 0.05)); box-shadow: 0 0 18px rgba(0, 90, 190, 0.2); animation-duration: 16s; animation-delay: 4s; }
-        .droplet:nth-child(6) { left: 55%; width: 7px; height: 7px; background: radial-gradient(circle, rgba(0, 80, 180, 0.35), rgba(0, 80, 180, 0.05)); box-shadow: 0 0 22px rgba(0, 80, 180, 0.2); animation-duration: 13s; animation-delay: 6s; }
-        .droplet:nth-child(7) { left: 65%; width: 9px; height: 9px; background: radial-gradient(circle, rgba(0, 60, 150, 0.3), rgba(0, 60, 150, 0.03)); box-shadow: 0 0 28px rgba(0, 60, 150, 0.15); animation-duration: 19s; animation-delay: 1s; }
-        .droplet:nth-child(8) { left: 75%; width: 4px; height: 4px; background: radial-gradient(circle, rgba(0, 100, 200, 0.5), rgba(0, 100, 200, 0.05)); box-shadow: 0 0 16px rgba(0, 100, 200, 0.25); animation-duration: 15s; animation-delay: 5s; }
-        .droplet:nth-child(9) { left: 85%; width: 8px; height: 8px; background: radial-gradient(circle, rgba(0, 80, 180, 0.35), rgba(0, 80, 180, 0.05)); box-shadow: 0 0 24px rgba(0, 80, 180, 0.2); animation-duration: 17s; animation-delay: 3s; }
-        .droplet:nth-child(10) { left: 95%; width: 5px; height: 5px; background: radial-gradient(circle, rgba(0, 90, 190, 0.4), rgba(0, 90, 190, 0.05)); box-shadow: 0 0 18px rgba(0, 90, 190, 0.2); animation-duration: 14s; animation-delay: 7s; }
+        .droplet:nth-child(1) { left: 5%; width: 6px; height: 6px; background: radial-gradient(circle, rgba(0, 100, 200, 0.4), rgba(0, 100, 200, 0.05)); animation-duration: 14s; animation-delay: 0s; }
+        .droplet:nth-child(2) { left: 15%; width: 8px; height: 8px; background: radial-gradient(circle, rgba(0, 80, 180, 0.3), rgba(0, 80, 180, 0.05)); animation-duration: 18s; animation-delay: 3s; }
+        .droplet:nth-child(3) { left: 25%; width: 4px; height: 4px; background: radial-gradient(circle, rgba(0, 100, 200, 0.5), rgba(0, 100, 200, 0.05)); animation-duration: 12s; animation-delay: 5s; }
+        .droplet:nth-child(4) { left: 35%; width: 10px; height: 10px; background: radial-gradient(circle, rgba(0, 60, 150, 0.25), rgba(0, 60, 150, 0.03)); animation-duration: 20s; animation-delay: 2s; }
+        .droplet:nth-child(5) { left: 45%; width: 5px; height: 5px; background: radial-gradient(circle, rgba(0, 90, 190, 0.4), rgba(0, 90, 190, 0.05)); animation-duration: 16s; animation-delay: 4s; }
+        .droplet:nth-child(6) { left: 55%; width: 7px; height: 7px; background: radial-gradient(circle, rgba(0, 80, 180, 0.35), rgba(0, 80, 180, 0.05)); animation-duration: 13s; animation-delay: 6s; }
+        .droplet:nth-child(7) { left: 65%; width: 9px; height: 9px; background: radial-gradient(circle, rgba(0, 60, 150, 0.3), rgba(0, 60, 150, 0.03)); animation-duration: 19s; animation-delay: 1s; }
+        .droplet:nth-child(8) { left: 75%; width: 4px; height: 4px; background: radial-gradient(circle, rgba(0, 100, 200, 0.5), rgba(0, 100, 200, 0.05)); animation-duration: 15s; animation-delay: 5s; }
+        .droplet:nth-child(9) { left: 85%; width: 8px; height: 8px; background: radial-gradient(circle, rgba(0, 80, 180, 0.35), rgba(0, 80, 180, 0.05)); animation-duration: 17s; animation-delay: 3s; }
+        .droplet:nth-child(10) { left: 95%; width: 5px; height: 5px; background: radial-gradient(circle, rgba(0, 90, 190, 0.4), rgba(0, 90, 190, 0.05)); animation-duration: 14s; animation-delay: 7s; }
         
         @keyframes dropletFall {
             0% { transform: translateY(-100px) scale(1) rotate(0deg); opacity: 0; }
@@ -360,6 +364,9 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             font-weight: 500;
         }
         
+        /* ============================================================
+           ALERT STYLES - INCLUDING WARNING
+           ============================================================ */
         .alert {
             padding: 10px 14px;
             border-radius: 10px;
@@ -388,9 +395,10 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         }
         
         .alert-warning {
-            background: rgba(200, 160, 0, 0.08);
+            background: rgba(200, 160, 0, 0.12);
             color: #8a6a00;
-            border: 1px solid rgba(200, 160, 0, 0.06);
+            border: 1px solid rgba(200, 160, 0, 0.08);
+            border-left: 4px solid #ffd700;
         }
         
         .alert-success {
@@ -405,9 +413,76 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             border: 1px solid rgba(0, 100, 200, 0.04);
         }
         
+        .alert-blocked {
+            background: rgba(200, 50, 50, 0.12);
+            color: #992222;
+            border: 2px solid #cc3333;
+            border-left: 4px solid #cc3333;
+            font-weight: 700;
+        }
+        
         .alert i {
             font-size: 16px;
         }
+        
+        /* Attempt Counter Display */
+        .attempt-counter {
+            display: none;
+            font-size: 12px;
+            color: #3a5a7a;
+            margin-top: 6px;
+            font-weight: 500;
+            padding: 4px 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .attempt-counter.show {
+            display: block;
+        }
+        
+        .attempt-counter .remaining {
+            color: #cc3333;
+            font-weight: 700;
+        }
+        
+        .attempt-counter .attempt-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        
+        .attempt-counter .attempt-dots .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #d0d8e0;
+            transition: all 0.3s ease;
+        }
+        
+        .attempt-counter .attempt-dots .dot.failed {
+            background: #cc3333;
+        }
+        
+        .attempt-counter .attempt-dots .dot.warning {
+            background: #ffd700;
+            animation: pulseDot 1s ease-in-out infinite;
+        }
+        
+        .attempt-counter .attempt-dots .dot.remaining {
+            background: #d0d8e0;
+        }
+        
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        
+        /* ============================================================ */
+        /* FORM STYLES */
+        /* ============================================================ */
         
         .form-group {
             margin-bottom: 14px;
@@ -450,6 +525,11 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         .form-group input::placeholder {
             color: #4a6a8a;
             font-weight: 400;
+        }
+        
+        .form-group input.error {
+            border-color: rgba(200, 50, 50, 0.3);
+            background: rgba(200, 50, 50, 0.03);
         }
         
         .password-wrapper {
@@ -517,28 +597,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         
         .forgot-link:hover {
             color: #003366;
-        }
-        
-        .divider-container {
-            display: flex;
-            align-items: center;
-            margin: 16px 0;
-            gap: 16px;
-        }
-        
-        .divider-line {
-            flex: 1;
-            height: 1px;
-            background: rgba(0, 60, 120, 0.08);
-        }
-        
-        .divider-text {
-            font-size: 11px;
-            color: #3a5a7a;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
         }
         
         .btn-login {
@@ -617,9 +675,28 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             100% { transform: rotate(360deg); }
         }
         
-        /* ============================================================ */
-        /* GOOGLE SIGN-IN BUTTON                                         */
-        /* ============================================================ */
+        .divider-container {
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+            gap: 16px;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(0, 60, 120, 0.08);
+        }
+        
+        .divider-text {
+            font-size: 11px;
+            color: #3a5a7a;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        
         .btn-google {
             width: 100%;
             padding: 12px;
@@ -645,16 +722,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             background: #f8fafc;
         }
         
-        .btn-google:active {
-            transform: scale(0.98);
-        }
-        
-        .btn-google:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
         .btn-google .google-icon {
             width: 24px;
             height: 24px;
@@ -666,23 +733,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         .btn-google .google-icon svg {
             width: 20px;
             height: 20px;
-        }
-        
-        .btn-google .spinner {
-            display: none;
-            animation: spin 1s linear infinite;
-        }
-        
-        .btn-google.loading .spinner {
-            display: inline-block;
-        }
-        
-        .btn-google.loading .btn-text {
-            display: none;
-        }
-        
-        .btn-google.loading .google-icon {
-            display: none;
         }
         
         .login-footer {
@@ -722,6 +772,108 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             color: #1a3a5c;
         }
         
+        /* ============================================================
+           BLOCKED OVERLAY
+           ============================================================ */
+        .blocked-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .blocked-overlay.show {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .blocked-modal {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px 36px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            animation: bounceIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.92) translateY(12px); opacity: 0; }
+            60% { transform: scale(1.02) translateY(-4px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        
+        .blocked-modal .blocked-icon {
+            font-size: 48px;
+            color: #cc3333;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .blocked-modal h2 {
+            font-size: 22px;
+            color: #0a1e2f;
+            margin-bottom: 8px;
+        }
+        
+        .blocked-modal p {
+            color: #3a4a5a;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .blocked-modal .blocked-timer {
+            background: #f5f5f5;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #1a3a5c;
+            font-weight: 700;
+            margin-bottom: 16px;
+            font-family: monospace;
+        }
+        
+        .blocked-modal .btn-retry {
+            padding: 10px 32px;
+            background: #0055aa;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .blocked-modal .btn-retry:hover {
+            background: #003d7a;
+            transform: translateY(-2px);
+        }
+        
+        .blocked-modal .btn-retry:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (max-width: 820px) {
             .login-card {
                 grid-template-columns: 1fr;
@@ -779,6 +931,11 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
             .btn-google {
                 font-size: 14px;
                 padding: 10px;
+            }
+            
+            .blocked-modal {
+                padding: 28px 20px;
+                margin: 16px;
             }
         }
         
@@ -878,13 +1035,16 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                     <p>Login to your Smart Water Guardian account</p>
                 </div>
                 
+                <!-- ============================================================ -->
+                <!-- ALERT MESSAGES - INCLUDING WARNING                            -->
+                <!-- ============================================================ -->
                 <div id="alert-error" class="alert alert-danger">
                     <i class="fas fa-exclamation-circle"></i>
                     <span id="errorMessage">Invalid credentials</span>
                 </div>
                 <div id="alert-warning" class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <span id="warningMessage">Please select your role</span>
+                    <span id="warningMessage">Warning: You have 1 attempt remaining</span>
                 </div>
                 <div id="alert-success" class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
@@ -893,6 +1053,20 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                 <div id="alert-info" class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
                     <span id="infoMessage">Your account is pending approval</span>
+                </div>
+                <div id="alert-blocked" class="alert alert-blocked">
+                    <i class="fas fa-ban"></i>
+                    <span id="blockedMessage">Account locked. Please wait.</span>
+                </div>
+                
+                <!-- Attempt Counter -->
+                <div id="attemptCounter" class="attempt-counter">
+                    <div>Attempts remaining: <span class="remaining" id="attemptsRemaining">3</span></div>
+                    <div class="attempt-dots" id="attemptDots">
+                        <span class="dot" id="dot1"></span>
+                        <span class="dot" id="dot2"></span>
+                        <span class="dot" id="dot3"></span>
+                    </div>
                 </div>
                 
                 <form id="loginForm">
@@ -959,6 +1133,19 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         </div>
     </div>
 
+    <!-- ============================================================
+    BLOCKED OVERLAY
+    ============================================================ -->
+    <div class="blocked-overlay" id="blockedOverlay">
+        <div class="blocked-modal">
+            <span class="blocked-icon"><i class="fas fa-ban"></i></span>
+            <h2>Account Locked</h2>
+            <p>Too many failed login attempts. Your account has been temporarily locked for security purposes.</p>
+            <div class="blocked-timer" id="blockedTimer">05:00</div>
+            <button class="btn-retry" id="retryBtn" onclick="location.reload()" disabled>Retry in <span id="retryCountdown">5</span> min</button>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // FIREBASE CONFIGURATION
@@ -978,8 +1165,14 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         const auth = firebase.auth();
         const database = firebase.database();
 
+        // ============================================================
+        // GLOBAL VARIABLES
+        // ============================================================
         let selectedLoginRole = 'consumer';
         let loginAttempts = 0;
+        let maxAttempts = 3;
+        let isBlocked = false;
+        let blockTimerInterval = null;
         let googleLoginInProgress = false;
 
         // ============================================================
@@ -1015,7 +1208,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         }
 
         // ============================================================
-        // VALIDATION HELPERS
+        // VALIDATION
         // ============================================================
         function validateEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -1029,28 +1222,379 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                 error: document.getElementById('alert-error'),
                 warning: document.getElementById('alert-warning'),
                 success: document.getElementById('alert-success'),
-                info: document.getElementById('alert-info')
+                info: document.getElementById('alert-info'),
+                blocked: document.getElementById('alert-blocked')
             };
             
+            // Hide all alerts first
             Object.values(alerts).forEach(el => el.classList.remove('show'));
             
             if (alerts[type]) {
                 const msgEl = document.getElementById(type === 'error' ? 'errorMessage' : 
                                                        type === 'warning' ? 'warningMessage' : 
                                                        type === 'success' ? 'successMessage' : 
-                                                       type === 'info' ? 'infoMessage' : '');
+                                                       type === 'info' ? 'infoMessage' : 
+                                                       type === 'blocked' ? 'blockedMessage' : '');
                 if (msgEl) msgEl.textContent = message;
                 alerts[type].classList.add('show');
                 
-                const timeout = type === 'info' ? 8000 : 5000;
-                setTimeout(() => {
-                    alerts[type].classList.remove('show');
-                }, timeout);
+                // Auto-hide (except blocked and warning)
+                if (type !== 'blocked' && type !== 'warning') {
+                    setTimeout(() => {
+                        alerts[type].classList.remove('show');
+                    }, 5000);
+                }
             }
         }
 
         // ============================================================
-        // CREATE USER DATA IN FIREBASE (if missing)
+        // ATTEMPT COUNTER DISPLAY
+        // ============================================================
+        function updateAttemptCounter(attempts, remaining) {
+            const counter = document.getElementById('attemptCounter');
+            const remainingEl = document.getElementById('attemptsRemaining');
+            
+            if (attempts > 0) {
+                counter.classList.add('show');
+                remainingEl.textContent = remaining;
+                
+                // Update dots
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById('dot' + i);
+                    dot.className = 'dot';
+                    
+                    if (i <= attempts) {
+                        // This attempt has been used (failed)
+                        if (i === 2 && attempts === 2) {
+                            dot.classList.add('warning');
+                        } else {
+                            dot.classList.add('failed');
+                        }
+                    } else {
+                        dot.classList.add('remaining');
+                    }
+                }
+            } else {
+                counter.classList.remove('show');
+            }
+        }
+
+        // ============================================================
+        // CHECK BLOCK STATUS FROM SERVER
+        // ============================================================
+        async function checkBlockStatus() {
+            try {
+                const response = await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'get_attempt_status' })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    loginAttempts = data.attempts;
+                    updateAttemptCounter(data.attempts, data.remaining);
+                    
+                    if (data.blocked) {
+                        isBlocked = true;
+                        showBlockedOverlay(data.blocked_until);
+                    } else if (data.show_warning) {
+                        showAlert('warning', data.warning_message);
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not check block status:', error);
+            }
+        }
+
+        // ============================================================
+        // SHOW BLOCKED OVERLAY
+        // ============================================================
+        function showBlockedOverlay(minutes) {
+            isBlocked = true;
+            const overlay = document.getElementById('blockedOverlay');
+            overlay.classList.add('show');
+            
+            let totalSeconds = minutes * 60;
+            const timerEl = document.getElementById('blockedTimer');
+            const retryBtn = document.getElementById('retryBtn');
+            const retryCountdown = document.getElementById('retryCountdown');
+            
+            // Disable login form
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('email').disabled = true;
+            document.getElementById('password').disabled = true;
+            
+            // Start countdown
+            if (blockTimerInterval) clearInterval(blockTimerInterval);
+            
+            blockTimerInterval = setInterval(() => {
+                totalSeconds--;
+                
+                if (totalSeconds <= 0) {
+                    clearInterval(blockTimerInterval);
+                    overlay.classList.remove('show');
+                    isBlocked = false;
+                    loginAttempts = 0;
+                    updateAttemptCounter(0, 3);
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('email').disabled = false;
+                    document.getElementById('password').disabled = false;
+                    showAlert('success', '✅ You can now try logging in again.');
+                    return;
+                }
+                
+                const mins = Math.floor(totalSeconds / 60);
+                const secs = totalSeconds % 60;
+                timerEl.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+                retryCountdown.textContent = Math.ceil(totalSeconds / 60);
+                
+                if (totalSeconds <= 300) {
+                    retryBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // ============================================================
+        // LOGIN FORM HANDLER - WITH ATTEMPT WARNING
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (isBlocked) {
+                showAlert('blocked', 'Your account is temporarily locked. Please wait.');
+                return;
+            }
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const role = document.querySelector('input[name="login_role"]:checked').value;
+            
+            if (!email || !password) {
+                showAlert('error', 'Please enter your email and password');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showAlert('error', 'Please enter a valid email address');
+                return;
+            }
+            
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                // SUCCESS - Reset attempts
+                loginAttempts = 0;
+                updateAttemptCounter(0, 3);
+                await handleSuccessfulLogin(userCredential.user, role);
+                
+            } catch (error) {
+                // FAILED - Record attempt on server
+                await recordFailedAttempt();
+                handleLoginError(error);
+                
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // RECORD FAILED ATTEMPT ON SERVER
+        // ============================================================
+        async function recordFailedAttempt() {
+            try {
+                const response = await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'login_attempt' })
+                });
+                const data = await response.json();
+                
+                loginAttempts = data.attempts || (loginAttempts + 1);
+                const remaining = data.remaining || (3 - loginAttempts);
+                
+                // Update the counter
+                updateAttemptCounter(loginAttempts, remaining);
+                
+                // Check if blocked
+                if (data.blocked) {
+                    showBlockedOverlay(data.remaining_minutes || 5);
+                    return;
+                }
+                
+                // Show warning after 2nd failed attempt
+                if (data.show_warning && data.warning_message) {
+                    showAlert('warning', data.warning_message);
+                }
+                
+                // Update email field with error state
+                document.getElementById('email').classList.add('error');
+                document.getElementById('password').classList.add('error');
+                
+                // Remove error state after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('email').classList.remove('error');
+                    document.getElementById('password').classList.remove('error');
+                }, 3000);
+                
+                return data;
+                
+            } catch (error) {
+                console.warn('Could not record attempt:', error);
+                // Fallback to local counting
+                loginAttempts++;
+                updateAttemptCounter(loginAttempts, 3 - loginAttempts);
+            }
+        }
+
+        // ============================================================
+        // HANDLE LOGIN ERROR
+        // ============================================================
+        function handleLoginError(error) {
+            let message = error.message;
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    message = '❌ No account found with this email address. Please register first.';
+                    break;
+                case 'auth/wrong-password':
+                    message = '❌ Incorrect password. Please try again.';
+                    break;
+                case 'auth/too-many-requests':
+                    message = '⚠️ Too many failed attempts. Please try again later or reset your password.';
+                    break;
+                case 'auth/user-disabled':
+                    message = '⚠️ This account has been disabled. Please contact support.';
+                    break;
+                case 'auth/invalid-email':
+                    message = '❌ Invalid email format.';
+                    break;
+                case 'auth/network-request-failed':
+                    message = '⚠️ Network error. Please check your internet connection.';
+                    break;
+                default:
+                    message = '❌ ' + error.message;
+            }
+            
+            // Don't override warning if one is already showing
+            const warningAlert = document.getElementById('alert-warning');
+            if (!warningAlert.classList.contains('show')) {
+                showAlert('error', message);
+            } else {
+                // Show error briefly then restore warning
+                showAlert('error', message);
+                setTimeout(() => {
+                    // Restore warning after 3 seconds
+                    const remaining = 3 - loginAttempts;
+                    if (remaining > 0) {
+                        showAlert('warning', '⚠️ Warning: You have ' + remaining + ' attempt(s) remaining. Your account will be locked after ' + remaining + ' more failed attempt(s).');
+                    }
+                }, 3000);
+            }
+        }
+
+        // ============================================================
+        // HANDLE SUCCESSFUL LOGIN
+        // ============================================================
+        async function handleSuccessfulLogin(user, selectedRole, displayName, photoURL) {
+            try {
+                // Reset attempts on success
+                await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset_attempts' })
+                });
+                
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                let userData = snapshot.val();
+                
+                if (!userData) {
+                    showAlert('info', 'Setting up your account...');
+                    userData = await createUserData(user.uid, user.email, displayName || user.displayName, photoURL || user.photoURL);
+                }
+                
+                if (userData.isActive === false) {
+                    showAlert('error', 'This account has been disabled. Please contact support.');
+                    await auth.signOut();
+                    return;
+                }
+                
+                const isAdminUser = userData.role === 'system_admin' || 
+                                   userData.role === 'municipal_admin' || 
+                                   userData.role === 'admin';
+                
+                if (!isAdminUser && userData.is_approved === false) {
+                    showAlert('info', 'Your account is pending approval. Please check your email for confirmation.');
+                    await auth.signOut();
+                    return;
+                }
+                
+                const userRole = userData.role || 'consumer';
+                let finalRole = userRole;
+                
+                if (selectedRole === 'admin') {
+                    if (userRole !== 'system_admin' && userRole !== 'municipal_admin' && userRole !== 'admin') {
+                        showAlert('error', 'This account does not have admin privileges. Please login as Consumer.');
+                        await auth.signOut();
+                        return;
+                    }
+                }
+                
+                const response = await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'set_session',
+                        uid: user.uid,
+                        email: user.email,
+                        firstName: userData.firstName || '',
+                        lastName: userData.lastName || '',
+                        role: finalRole,
+                        photoURL: userData.photoURL || ''
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('success', '✅ Login successful! Redirecting...');
+                    
+                    await database.ref('users/' + user.uid).update({
+                        last_login: new Date().toISOString()
+                    });
+                    
+                    setTimeout(() => {
+                        if (finalRole === 'system_admin' || finalRole === 'municipal_admin' || finalRole === 'admin') {
+                            window.location.href = 'admin.php';
+                        } else {
+                            window.location.href = 'dashboard.php';
+                        }
+                    }, 800);
+                } else {
+                    throw new Error('Session creation failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('error', error.message || 'Login failed. Please try again.');
+                
+                if (document.getElementById('googleBtn').classList.contains('loading')) {
+                    document.getElementById('googleBtn').classList.remove('loading');
+                    document.getElementById('googleBtn').disabled = false;
+                    googleLoginInProgress = false;
+                }
+                
+                document.getElementById('loginBtn').classList.remove('loading');
+                document.getElementById('loginBtn').disabled = false;
+            }
+        }
+
+        // ============================================================
+        // CREATE USER DATA
         // ============================================================
         async function createUserData(uid, email, displayName, photoURL) {
             try {
@@ -1061,9 +1605,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                     return snapshot.val();
                 }
                 
-                console.log('User data not found, creating...');
-                
-                // Check if this is an admin email
                 const isAdmin = email === 'admin@smartwater.com' || 
                                email === 'admin@smartwater.co.za' ||
                                email === 'ncubemcliff@gmail.com';
@@ -1088,7 +1629,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                 };
                 
                 await userRef.set(userData);
-                console.log('Created user data for:', uid);
                 
                 if (isAdmin) {
                     await database.ref('admin_settings/' + uid).set({
@@ -1096,66 +1636,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                         municipality: 'System Administrator',
                         createdAt: new Date().toISOString()
                     });
-                } else {
-                    const propertyRef = database.ref('properties/' + uid).push();
-                    await propertyRef.set({
-                        propertyName: 'My Home',
-                        address: 'Not specified',
-                        meterId: 'meter_' + Date.now(),
-                        createdAt: new Date().toISOString()
-                    });
-                    
-                    const thresholds = [
-                        { type: 'daily_limit', value: 1000 },
-                        { type: 'leak_duration', value: 2 },
-                        { type: 'flow_rate', value: 20 }
-                    ];
-                    
-                    for (const t of thresholds) {
-                        await database.ref('thresholds/' + uid).push({
-                            thresholdType: t.type,
-                            thresholdValue: t.value,
-                            isActive: true,
-                            createdAt: new Date().toISOString()
-                        });
-                    }
-                }
-                
-                const welcomeMessage = isAdmin 
-                    ? 'Welcome Admin! You have full access to manage the system.'
-                    : 'Welcome to Smart Water Guardian! Your account is pending approval.';
-                
-                await database.ref('alerts/' + uid).push({
-                    type: 'system',
-                    message: welcomeMessage,
-                    severity: 'info',
-                    timestamp: new Date().toISOString(),
-                    isRead: false
-                });
-                
-                // Sync to MySQL
-                try {
-                    const mysqlResponse = await fetch('../api/users.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            firebase_uid: uid,
-                            email: email,
-                            first_name: firstName,
-                            last_name: lastName,
-                            phone: '',
-                            address: isAdmin ? 'System Administrator' : '',
-                            role: role,
-                            is_approved: isAdmin ? 1 : 0,
-                            photo_url: photoURL || ''
-                        })
-                    });
-                    const mysqlResult = await mysqlResponse.json();
-                    if (mysqlResult.success) {
-                        console.log('MySQL: User saved successfully!');
-                    }
-                } catch (mysqlError) {
-                    console.warn('MySQL Error:', mysqlError.message);
                 }
                 
                 return userData;
@@ -1167,101 +1647,39 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         }
 
         // ============================================================
-        // SEND PENDING APPROVAL REMINDER EMAIL
-        // ============================================================
-        async function sendPendingReminderEmail(email, firstName) {
-            try {
-                const response = await fetch('../api/send-notification.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        type: 'pending_approval_reminder',
-                        name: firstName || 'User'
-                    })
-                });
-                const result = await response.json();
-                return result.success;
-            } catch (error) {
-                console.warn('Reminder email failed:', error);
-                return false;
-            }
-        }
-
-        // ============================================================
-        // LOGIN FORM HANDLER - WITH FULL APPROVAL CHECK
-        // ============================================================
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const role = document.querySelector('input[name="login_role"]:checked').value;
-            
-            if (!email || !password) {
-                showAlert('error', 'Please enter your email and password');
-                return;
-            }
-            
-            if (!validateEmail(email)) {
-                showAlert('error', 'Please enter a valid email address');
-                return;
-            }
-            
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
-            
-            document.getElementById('alert-error').classList.remove('show');
-            document.getElementById('alert-warning').classList.remove('show');
-            document.getElementById('alert-info').classList.remove('show');
-            document.getElementById('alert-success').classList.remove('show');
-            
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                await handleSuccessfulLogin(userCredential.user, role);
-            } catch (error) {
-                handleLoginError(error);
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        });
-
-        // ============================================================
         // GOOGLE SIGN-IN
         // ============================================================
         async function signInWithGoogle() {
-            if (googleLoginInProgress) return;
+            if (googleLoginInProgress || isBlocked) return;
             
             const btn = document.getElementById('googleBtn');
             googleLoginInProgress = true;
             btn.classList.add('loading');
             btn.disabled = true;
             
-            document.getElementById('alert-error').classList.remove('show');
-            document.getElementById('alert-warning').classList.remove('show');
-            document.getElementById('alert-info').classList.remove('show');
-            document.getElementById('alert-success').classList.remove('show');
+            Object.values({
+                error: document.getElementById('alert-error'),
+                warning: document.getElementById('alert-warning'),
+                success: document.getElementById('alert-success'),
+                info: document.getElementById('alert-info')
+            }).forEach(el => el.classList.remove('show'));
             
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
-                provider.setCustomParameters({
-                    prompt: 'select_account'
-                });
+                provider.setCustomParameters({ prompt: 'select_account' });
                 
                 const result = await auth.signInWithPopup(provider);
                 const user = result.user;
-                
-                // Get role from selection
                 const role = document.querySelector('input[name="login_role"]:checked').value;
                 
-                // Get additional user info from Google
-                const credential = result.credential;
-                const photoURL = user.photoURL || '';
-                const displayName = user.displayName || '';
+                // Reset attempts on successful Google login
+                await fetch('../api/auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset_attempts' })
+                });
                 
-                // Handle the login
-                await handleSuccessfulLogin(user, role, displayName, photoURL);
+                await handleSuccessfulLogin(user, role, user.displayName, user.photoURL);
                 
             } catch (error) {
                 console.error('Google Sign-In Error:', error);
@@ -1271,10 +1689,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                     message = 'Sign-in popup was closed. Please try again.';
                 } else if (error.code === 'auth/popup-blocked') {
                     message = 'Pop-up was blocked. Please allow pop-ups for this site.';
-                } else if (error.code === 'auth/cancelled-popup-request') {
-                    message = 'Sign-in was cancelled. Please try again.';
-                } else if (error.code === 'auth/network-request-failed') {
-                    message = 'Network error. Please check your internet connection.';
                 }
                 
                 showAlert('error', 'Google Sign-In failed: ' + message);
@@ -1282,141 +1696,6 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
                 btn.classList.remove('loading');
                 btn.disabled = false;
             }
-        }
-
-        // ============================================================
-        // HANDLE SUCCESSFUL LOGIN (Shared between email and Google)
-        // ============================================================
-        async function handleSuccessfulLogin(user, selectedRole, displayName, photoURL) {
-            try {
-                // Get user data from Firebase
-                const userRef = database.ref('users/' + user.uid);
-                const snapshot = await userRef.once('value');
-                let userData = snapshot.val();
-                
-                // If user data doesn't exist, create it
-                if (!userData) {
-                    showAlert('info', 'Setting up your account...');
-                    userData = await createUserData(user.uid, user.email, displayName || user.displayName, photoURL || user.photoURL);
-                }
-                
-                // Check if account is disabled
-                if (userData.isActive === false) {
-                    showAlert('error', 'This account has been disabled. Please contact support.');
-                    await auth.signOut();
-                    return;
-                }
-                
-                // Approval check
-                const isAdminUser = userData.role === 'system_admin' || 
-                                   userData.role === 'municipal_admin' || 
-                                   userData.role === 'admin';
-                
-                if (!isAdminUser && userData.is_approved === false) {
-                    showAlert('info', 'Your account is pending approval. Please check your email for confirmation.');
-                    await sendPendingReminderEmail(user.email, userData.firstName);
-                    await auth.signOut();
-                    return;
-                }
-                
-                // Role verification
-                const userRole = userData.role || 'consumer';
-                let finalRole = userRole;
-                
-                if (selectedRole === 'admin') {
-                    if (userRole !== 'system_admin' && userRole !== 'municipal_admin' && userRole !== 'admin') {
-                        showAlert('error', 'This account does not have admin privileges. Please login as Consumer.');
-                        await auth.signOut();
-                        return;
-                    }
-                }
-                
-                // Set PHP session
-                const response = await fetch('../api/auth.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'set_session',
-                        uid: user.uid,
-                        email: user.email,
-                        firstName: userData.firstName || '',
-                        lastName: userData.lastName || '',
-                        role: finalRole,
-                        photoURL: userData.photoURL || ''
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showAlert('success', 'Login successful! Redirecting...');
-                    
-                    await database.ref('users/' + user.uid).update({
-                        last_login: new Date().toISOString()
-                    });
-                    
-                    setTimeout(() => {
-                        if (finalRole === 'system_admin' || finalRole === 'municipal_admin' || finalRole === 'admin') {
-                            window.location.href = 'admin.php';
-                        } else {
-                            window.location.href = 'dashboard.php';
-                        }
-                    }, 500);
-                } else {
-                    throw new Error('Session creation failed');
-                }
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showAlert('error', error.message || 'Login failed. Please try again.');
-                
-                // Reset Google button if it was Google login
-                if (document.getElementById('googleBtn').classList.contains('loading')) {
-                    document.getElementById('googleBtn').classList.remove('loading');
-                    document.getElementById('googleBtn').disabled = false;
-                    googleLoginInProgress = false;
-                }
-                
-                // Reset email login button
-                document.getElementById('loginBtn').classList.remove('loading');
-                document.getElementById('loginBtn').disabled = false;
-            }
-        }
-
-        // ============================================================
-        // HANDLE LOGIN ERROR
-        // ============================================================
-        function handleLoginError(error) {
-            let message = error.message;
-            
-            switch (error.code) {
-                case 'auth/user-not-found':
-                    message = 'No account found with this email address. Please register first.';
-                    break;
-                case 'auth/wrong-password':
-                    message = 'Incorrect password. Please try again.';
-                    loginAttempts++;
-                    if (loginAttempts >= 3) {
-                        message += ' Too many failed attempts.';
-                    }
-                    break;
-                case 'auth/too-many-requests':
-                    message = 'Too many failed attempts. Please try again later or reset your password.';
-                    break;
-                case 'auth/user-disabled':
-                    message = 'This account has been disabled. Please contact support.';
-                    break;
-                case 'auth/invalid-email':
-                    message = 'Invalid email format.';
-                    break;
-                case 'auth/network-request-failed':
-                    message = 'Network error. Please check your internet connection.';
-                    break;
-                default:
-                    message = error.message || 'Login failed. Please try again.';
-            }
-            
-            showAlert('error', message);
         }
 
         // ============================================================
@@ -1442,29 +1721,35 @@ if (isset($_SESSION['user_id']) && $_SESSION['logged_in']) {
         }
 
         // ============================================================
-        // ENTER KEY SUPPORT
+        // INITIALIZE ON PAGE LOAD
         // ============================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const form = document.getElementById('loginForm');
-                const active = document.activeElement;
-                if (active === document.getElementById('email') || 
-                    active === document.getElementById('password')) {
-                    form.dispatchEvent(new Event('submit'));
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check block status from server
+            await checkBlockStatus();
+            
+            // Enter key support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const form = document.getElementById('loginForm');
+                    const active = document.activeElement;
+                    if (active === document.getElementById('email') || 
+                        active === document.getElementById('password')) {
+                        form.dispatchEvent(new Event('submit'));
+                    }
                 }
-            }
+            });
         });
 
         // ============================================================
-        // EXPOSE FUNCTIONS TO GLOBAL SCOPE
+        // EXPOSE FUNCTIONS
         // ============================================================
         window.togglePassword = togglePassword;
         window.forgotPassword = forgotPassword;
         window.selectRole = selectRole;
         window.showAlert = showAlert;
         window.signInWithGoogle = signInWithGoogle;
-        
-        console.log('Login page loaded with Google Sign-In and full approval checking!');
+
+        console.log('Login page loaded with 2-attempt warning system!');
     </script>
 </body>
 </html>
